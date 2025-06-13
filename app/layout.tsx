@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className}`}>
+        <body className={`${inter.className} dotted-background`}>
           <ThemeProvider attribute="class" defaultTheme="dark">
             <Header />
             <main className="min-h-screen">{children}</main>
