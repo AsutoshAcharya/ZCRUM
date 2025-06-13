@@ -4,4 +4,10 @@ declare namespace Shape {
     description: string;
     icon: any;
   };
+
+  type ProjectPayload = {
+    name: string;
+    key: string;
+    description?: string;
+  };
 }

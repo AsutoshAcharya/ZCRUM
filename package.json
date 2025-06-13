@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.21.0",
     "@clerk/themes": "^2.2.49",
+    "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.9.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -29,11 +30,13 @@
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.57.0",
     "react-spinners": "^0.17.0",
     "server-only": "^0.0.1",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

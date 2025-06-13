@@ -120,11 +120,34 @@
     @apply bg-background text-foreground;
   }
 }
-@layer utilities{
-  .gradient-title{
-  @apply font-extrabold bg-gradient-to-br from-blue-500 via-blue-100 to-blue-400 bg-clip-text
-  tracking-tighter text-transparent pr-2 pb-2;
+@keyframes gradient-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
+
+@layer utilities {
+  .gradient-title {
+    @apply font-extrabold tracking-tighter text-transparent pr-2 pb-2 bg-clip-text;
+
+    background-image: linear-gradient(270deg,
+      #4f46e5,  /* indigo-600 */
+      #3b82f6,  /* blue-500 */
+      #0ea5e9,  /* sky-500 */
+      #06b6d4,  /* cyan-500 */
+      #3b82f6,  /* blue-500 (loop back) */
+      #4f46e5   /* indigo-600 */
+    );
+
+    background-size: 300% 300%;
+    animation: gradient-slide 5s ease infinite;
+  }
 }
 html{
     scroll-behavior: smooth;
