@@ -5,8 +5,11 @@ import React from "react";
 import { Button } from "./ui/button";
 import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
+import { checkUser } from "@/lib/checkUser";
+import UserLoading from "./user-loading";
 
-const Header = () => {
+const Header = async () => {
+  await checkUser();
   return (
     <header>
       <nav className="py-6 px-4 flex justify-between items-center">
@@ -38,6 +41,7 @@ const Header = () => {
           </SignedIn>
         </div>
       </nav>
+      <UserLoading />
     </header>
   );
 };

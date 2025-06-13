@@ -16,9 +16,8 @@ export function CompanyCarousel() {
     >
       <CarouselContent className="flex gap-5 sm:gap-20 items-center">
         {companies.map(({ name, path, id }) => (
-          <CarouselItem className="basis-1/3 lg:basis-1/6">
+          <CarouselItem key={id} className="basis-1/3 lg:basis-1/6">
             <Image
-              key={id}
               src={path}
               alt={name}
               width={200}
