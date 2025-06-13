@@ -100,7 +100,7 @@ const CreateProjectPage = () => {
           <Textarea
             id="description"
             className="bg-slate-950 h-28"
-            placeholder="Project Key: (Ex:RFCE)"
+            placeholder="project description"
             {...register("description")}
             disabled={isLoading}
           />

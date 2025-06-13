@@ -40,3 +40,29 @@ export async function getOrganization(slug: string) {
     return null;
   }
 }
+
+export async function getProjects(organizationId: string) {
+  const { userId } = await auth();
+  try {
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+    const user = await db.user.findUnique({
+      where: {
+        clerkUserId: userId,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User Not Found");
+    }
+
+    const projects = await db.project.findMany({
+      where: {
+        organizationId,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return projects;
+  } catch (error) {}
+}
