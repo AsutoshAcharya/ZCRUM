@@ -176,17 +176,11 @@ const Notification = ({ userId }: { userId: string }) => {
                       <div className="flex items-center gap-1 justify-center flex-shrink-0 my-auto">
                         {!notification.read && (
                           <Tooltip>
-                            <TooltipTrigger>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleMarkAsRead(notification.id)
-                                }
-                                className="h-6 w-6 p-0"
-                              >
-                                <Eye className="h-3 w-3" />
-                              </Button>
+                            <TooltipTrigger
+                              onClick={() => handleMarkAsRead(notification.id)}
+                              className="cursor-pointer"
+                            >
+                              <Eye className="h-3 w-3" />
                             </TooltipTrigger>
                             <TooltipContent>Mark as read</TooltipContent>
                           </Tooltip>

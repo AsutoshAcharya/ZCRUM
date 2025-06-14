@@ -71,3 +71,23 @@ export async function getIssueForSprint(sprintId: string) {
 
   return issues;
 }
+
+export async function updateIssueOrder(updatedIssues: any) {
+  await checkUserAuthorization({});
+
+  await db.$transaction(async (prisma) => {
+    for (const issue of updatedIssues) {
+      const issueId = String(issue?.id);
+      await prisma.issue.update({
+        where: {
+          id: issueId,
+        },
+        data: {
+          statusId: issue?.statusId,
+          order: issue?.order,
+        },
+      });
+    }
+  });
+  return { status: true };
+}

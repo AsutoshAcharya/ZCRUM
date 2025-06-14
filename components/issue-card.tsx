@@ -39,29 +39,27 @@ const IssueCard: FC<Props> = ({
 
   return (
     <>
-      <Grow>
-        <Card
-          className={`border-0 border-t-2 ${
-            priorityColor[issue?.priority]
-          } rounded-lg cursor-pointer transition-shadow hover:shadow-lg hover:shadow-blue-500/30`}
-        >
-          <CardHeader className={``}>
-            <CardTitle>{issue.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-2 -mt-3">
-            {showStatus && issueStatus?.name && (
-              <Badge variant="outline">{issueStatus?.name}</Badge>
-            )}
-            <Badge variant="outline">{issue?.priority}</Badge>
-          </CardContent>
-          <CardFooter>
-            <UserAvatar user={issue?.assignee} />
-            <div className="text-xs text-gray-400 w-full">
-              Created {created}
-            </div>
-          </CardFooter>
-        </Card>
-      </Grow>
+      {/* <Grow> */}
+      <Card
+        className={`border-0 border-t-2 ${
+          priorityColor[issue?.priority]
+        } rounded-lg transition-shadow hover:shadow-lg hover:shadow-blue-500/30`}
+      >
+        <CardHeader className={``}>
+          <CardTitle>{issue.title}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex gap-2 -mt-3">
+          {showStatus && issueStatus?.name && (
+            <Badge variant="outline">{issueStatus?.name}</Badge>
+          )}
+          <Badge variant="outline">{issue?.priority}</Badge>
+        </CardContent>
+        <CardFooter>
+          <UserAvatar user={issue?.assignee} />
+          <div className="text-xs text-gray-400 w-full">Created {created}</div>
+        </CardFooter>
+      </Card>
+      {/* </Grow> */}
       {open && <></>}
     </>
   );

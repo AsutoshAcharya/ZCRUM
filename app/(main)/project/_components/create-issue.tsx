@@ -4,10 +4,8 @@ import { FC, useEffect } from "react";
 import {
   Drawer,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { IssueStatus } from "@/lib/generated/prisma";
 import { Controller, useForm } from "react-hook-form";
@@ -111,7 +109,7 @@ const CreateIssue: FC<Props> = ({
     }
   }, [newIssue, createIssueLoading]);
   return (
-    <Drawer open={isOpen} onClose={onClose}>
+    <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Create New Issue</DrawerTitle>
