@@ -20,4 +20,16 @@ declare namespace Shape {
     from: Date;
     to: Date;
   };
+
+  type Issuepayload = {
+    title: string;
+    descriotion: string;
+    status: string;
+
+    priority: string;
+
+    sprintId: string;
+
+    assigneeId?: string;
+  };
 }

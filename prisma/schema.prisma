@@ -27,15 +27,16 @@ model User {
 }
 
 model Project {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   name           String
   key            String
   description    String?
   organizationId String //store the clerk org id
   sprints        Sprint[]
   issues         Issue[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  statuses       IssueStatus[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@unique([organizationId, key])
 }
@@ -57,7 +58,9 @@ model Issue {
   id          String        @id @default(cuid())
   title       String
   description String?
-  status      IssueStatus
+  // status      IssueStatus
+  status      IssueStatus   @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId    String
   order       Int
   priority    IssuePriority
   assignee    User?         @relation("Assignee", fields: [assigneeId], references: [id])
@@ -71,7 +74,18 @@ model Issue {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  @@index([status, order])
+  @@index([statusId, order])
+}
+
+model IssueStatus {
+  id        String  @id @default(cuid())
+  name      String
+  order     Int
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  issues    Issue[]
+
+  @@unique([name, projectId])
 }
 
 enum SprintStatus {
@@ -80,12 +94,12 @@ enum SprintStatus {
   COMPLETED
 }
 
-enum IssueStatus {
-  TODO
-  IN_PROGRESS
-  IN_REVIEW
-  DONE
-}
+// enum IssueStatus {
+//   TODO
+//   IN_PROGRESS
+//   IN_REVIEW
+//   DONE
+// }
 
 enum IssuePriority {
   LOW

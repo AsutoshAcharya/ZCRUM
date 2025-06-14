@@ -38,6 +38,7 @@ import useFetch from "@/hooks/useFetch";
 import { createSprint } from "@/actions/sprint";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import AddWorkflowStatus from "./add-workflow";
 
 type SprintFormData = z.infer<typeof sprintSchema>;
 
@@ -46,6 +47,7 @@ interface Props {
   projectId: string;
   projectKey: string;
   sprintKey: number;
+  hasWorkflow: boolean;
 }
 
 const SprintCreationForm: FC<Props> = ({
@@ -53,6 +55,7 @@ const SprintCreationForm: FC<Props> = ({
   projectId,
   projectKey,
   sprintKey,
+  hasWorkflow,
 }) => {
   const [showForm, setShowForm] = useState(false);
   const [dateRange, setDateRange] = useState<Shape.DateRange>({
@@ -87,9 +90,10 @@ const SprintCreationForm: FC<Props> = ({
       <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-8">
         {projectTitle}
       </h1>
-
-      <Button onClick={() => setShowForm(true)}>Create New Sprint</Button>
-
+      <div className="flex flex-row gap-4">
+        {!hasWorkflow && <AddWorkflowStatus projectId={projectId} />}
+        <Button onClick={() => setShowForm(true)}>Create New Sprint</Button>
+      </div>
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
           className="sm:max-w-[500px]"

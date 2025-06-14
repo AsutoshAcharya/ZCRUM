@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { checkUserAuthorization } from "./checkUserAuthorization";
 
 export async function getOrganization(slug: string) {
   const { userId } = await auth();
@@ -65,4 +66,28 @@ export async function getProjects(organizationId: string) {
     });
     return projects;
   } catch (error) {}
+}
+
+export async function getOrganizationUsers(orgId: string) {
+  await checkUserAuthorization({});
+  const clerk = await clerkClient();
+
+  const organizationMemberships =
+    await clerk.organizations.getOrganizationMembershipList({
+      organizationId: orgId,
+    });
+
+  const userIds = organizationMemberships?.data?.map((m) =>
+    String(m.publicUserData?.userId)
+  );
+
+  const users = await db.user.findMany({
+    where: {
+      clerkUserId: {
+        in: userIds,
+      },
+    },
+  });
+
+  return users;
 }

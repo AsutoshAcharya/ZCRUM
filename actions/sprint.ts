@@ -66,3 +66,31 @@ export async function updateSprintStatus(
     throw new Error(error?.message);
   }
 }
+
+export async function addWorkflowStatus(
+  projectId: string,
+  status: Array<string>
+) {
+  await checkUserAuthorization({
+    checkForRole: true,
+  });
+
+  const project = await db.project.findUnique({
+    where: {
+      id: projectId,
+    },
+  });
+  if (!project) throw new Error("Project not found");
+  const payload: Array<{ name: string; order: number; projectId: string }> =
+    status.map((s, idx) => ({
+      name: s,
+      order: idx,
+      projectId,
+    }));
+
+  const workflowStatuses = await db.issueStatus.createMany({
+    data: payload,
+  });
+
+  return { success: true, statuses: workflowStatuses };
+}

@@ -20,6 +20,7 @@ const SingleProject = async ({
         projectId={project.id}
         projectKey={project.key}
         sprintKey={project.sprints?.length + 1}
+        hasWorkflow={project.statuses.length > 0}
       />
       {project.sprints.length > 0 ? (
         <SprintBoard

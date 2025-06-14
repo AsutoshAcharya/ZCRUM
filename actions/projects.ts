@@ -64,6 +64,9 @@ export async function getProject(projectId: string) {
       sprints: {
         orderBy: { createdAt: "desc" },
       },
+      statuses: {
+        orderBy: { order: "asc" },
+      },
     },
   });
   if (!project) return null;
