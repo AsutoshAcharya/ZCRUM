@@ -9,11 +9,12 @@ export async function checkUserAuthorization({
 }): Promise<{
   userId: string;
   orgId: string;
+  orgRole?: string;
 }> {
   const { userId, orgId, orgRole } = await auth();
   if (!userId) throw new Error("Unauthorized");
   if (!orgId) throw new Error("No organization selected");
   if (orgRole !== "org:admin" && checkForRole)
-    throw new Error("Only organization admins can delete projects");
-  return { userId, orgId };
+    throw new Error("Only organization admin can make this change");
+  return { userId, orgId, orgRole };
 }

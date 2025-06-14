@@ -1,6 +1,7 @@
 import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
+import SprintBoard from "../_components/sprint-board";
 
 const SingleProject = async ({
   params,
@@ -12,7 +13,7 @@ const SingleProject = async ({
   console.log(project);
   if (!project) notFound();
   return (
-    <div className=" container mx-auto">
+    <div className="container mx-auto p-4">
       {/* Sprint Creation */}
       <SprintCreationForm
         projectTitle={project.name}
@@ -20,7 +21,15 @@ const SingleProject = async ({
         projectKey={project.key}
         sprintKey={project.sprints?.length + 1}
       />
-      {project.sprints.length > 0 ? <></> : <div>Create Sprint</div>}
+      {project.sprints.length > 0 ? (
+        <SprintBoard
+          sprints={project.sprints}
+          projectId={projectId}
+          orgId={project.organizationId}
+        />
+      ) : (
+        <div>Create Sprint</div>
+      )}
     </div>
   );
 };

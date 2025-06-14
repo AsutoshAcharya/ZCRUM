@@ -35,7 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import "react-day-picker/dist/style.css";
 import useFetch from "@/hooks/useFetch";
-import createSprint from "@/actions/sprint";
+import { createSprint } from "@/actions/sprint";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

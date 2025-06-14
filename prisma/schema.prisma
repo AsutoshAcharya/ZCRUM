@@ -50,7 +50,7 @@ model Sprint {
   projectId String
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  Issue     Issue[]
+  issues    Issue[]
 }
 
 model Issue {
