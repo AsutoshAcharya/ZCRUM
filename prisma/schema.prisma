@@ -15,15 +15,16 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  clerkUserId    String   @unique
-  email          String   @unique
+  id             String         @id @default(cuid())
+  clerkUserId    String         @unique
+  email          String         @unique
   name           String?
   imageUrl       String?
-  createdIssues  Issue[]  @relation("Reporter")
-  assignedIssues Issue[]  @relation("Assignee")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdIssues  Issue[]        @relation("Reporter")
+  assignedIssues Issue[]        @relation("Assignee")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  Notification   Notification[]
 }
 
 model Project {
@@ -55,24 +56,25 @@ model Sprint {
 }
 
 model Issue {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
+  id           String         @id @default(cuid())
+  title        String
+  description  String?
   // status      IssueStatus
-  status      IssueStatus   @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  statusId    String
-  order       Int
-  priority    IssuePriority
-  assignee    User?         @relation("Assignee", fields: [assigneeId], references: [id])
-  assigneeId  String?
-  reporter    User          @relation("Reporter", fields: [reporterId], references: [id])
-  reporterId  String
-  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId   String
-  sprint      Sprint?       @relation(fields: [sprintId], references: [id], onDelete: SetNull)
-  sprintId    String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  status       IssueStatus    @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId     String
+  order        Int
+  priority     IssuePriority
+  assignee     User?          @relation("Assignee", fields: [assigneeId], references: [id])
+  assigneeId   String?
+  reporter     User           @relation("Reporter", fields: [reporterId], references: [id])
+  reporterId   String
+  project      Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  sprint       Sprint?        @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  sprintId     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
 
   @@index([statusId, order])
 }
@@ -86,6 +88,24 @@ model IssueStatus {
   issues    Issue[]
 
   @@unique([name, projectId])
+}
+
+enum NotificationType {
+  ASSIGNED
+  STATUS_CHANGE
+  PRIORITY_CHANGE
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id])
+  issue     Issue?           @relation(fields: [issueId], references: [id])
+  issueId   String?
 }
 
 enum SprintStatus {

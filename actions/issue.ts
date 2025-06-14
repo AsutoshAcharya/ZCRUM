@@ -1,6 +1,7 @@
 "use server";
 import { db } from "@/lib/prisma";
 import { checkUserAuthorization } from "./checkUserAuthorization";
+import { pusherServer } from "@/lib/pusher";
 
 export async function createIssue(projectId: string, data: any) {
   const { userId, orgId } = await checkUserAuthorization({});
@@ -34,6 +35,24 @@ export async function createIssue(projectId: string, data: any) {
       reporter: true,
     },
   });
+  console.log(issue);
+  if (issue?.assigneeId) {
+    await db.notification.create({
+      data: {
+        userId: issue?.assigneeId,
+        type: "ASSIGNED",
+        message: `You have been assigned to issue ${issue.title}`,
+        issueId: issue.id,
+      },
+    });
+    await pusherServer.trigger(
+      `issue-created-${issue.assigneeId}`,
+      "issue-assigned",
+      {
+        issue,
+      }
+    );
+  }
   return issue;
 }
 export async function getIssueForSprint(sprintId: string) {

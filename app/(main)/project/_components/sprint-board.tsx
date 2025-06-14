@@ -42,7 +42,6 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
   useEffect(() => {
     if (currentSprint.id) fetchIssues(currentSprint.id);
   }, [currentSprint.id]);
-  console.log(issues);
 
   if (issuesError) return <div>Error loading issues</div>;
   return (

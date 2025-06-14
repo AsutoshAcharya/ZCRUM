@@ -1,15 +1,21 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useAuth,
+  UserButton,
+} from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import { Button } from "./ui/button";
 import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
 import { checkUser } from "@/lib/checkUser";
 import UserLoading from "./user-loading";
-
+import Notification from "./notification";
 const Header = async () => {
   await checkUser();
+
   return (
     <header>
       <nav className="py-6 px-4 flex justify-between items-center">
@@ -36,6 +42,9 @@ const Header = async () => {
               <Button variant="outline">Login</Button>
             </SignInButton>
           </SignedOut>
+          <SignedIn>
+            <Notification />
+          </SignedIn>
           <SignedIn>
             <UserMenu />
           </SignedIn>
