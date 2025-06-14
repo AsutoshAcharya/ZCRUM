@@ -27,6 +27,7 @@ const SingleProject = async ({
           sprints={project.sprints}
           projectId={projectId}
           orgId={project.organizationId}
+          statuses={project.statuses}
         />
       ) : (
         <div>Create Sprint</div>

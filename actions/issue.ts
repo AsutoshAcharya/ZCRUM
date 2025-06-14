@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/lib/prisma";
 import { checkUserAuthorization } from "./checkUserAuthorization";
 
@@ -9,7 +10,7 @@ export async function createIssue(projectId: string, data: any) {
   const lastIssue = await db.issue.findFirst({
     where: {
       projectId,
-      status: data.status,
+      statusId: data.statusId,
     },
     orderBy: {
       order: "desc",
@@ -20,13 +21,12 @@ export async function createIssue(projectId: string, data: any) {
     data: {
       title: data.title,
       description: data.description,
-      status: data.status,
       statusId: data.statusId,
       priority: data.priority,
-      projectId: projectId,
       sprintId: data.sprintId,
-      reporterId: user?.id!,
       assigneeId: data.assigneeId || null,
+      projectId: projectId,
+      reporterId: user?.id!,
       order: newOrder,
     },
     include: {
