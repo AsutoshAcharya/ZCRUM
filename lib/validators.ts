@@ -14,3 +14,14 @@ export const projectSchema = z.object({
     .max(500, "Project key must be 500 characters or less")
     .optional(),
 });
+
+export const sprintSchema = z
+  .object({
+    name: z.string().min(1, "Sprint name is required"),
+    startDate: z.date(),
+    endDate: z.date(),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });

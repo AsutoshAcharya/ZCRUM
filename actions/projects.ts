@@ -1,22 +1,7 @@
 "use server";
 import { db } from "@/lib/prisma";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-
-async function checkUserAuthorization({
-  checkForRole = false,
-}: {
-  checkForRole?: boolean;
-}): Promise<{
-  userId: string;
-  orgId: string;
-}> {
-  const { userId, orgId, orgRole } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-  if (!orgId) throw new Error("No organization selected");
-  if (orgRole !== "org:admin" && checkForRole)
-    throw new Error("Only organization admins can delete projects");
-  return { userId, orgId };
-}
+import { clerkClient } from "@clerk/nextjs/server";
+import { checkUserAuthorization } from "./checkUserAuthorization";
 
 export async function createProject(data: Shape.ProjectPayload) {
   const { userId, orgId } = await checkUserAuthorization({});
@@ -66,4 +51,22 @@ export async function deleteProject(projectId: string) {
     },
   });
   return { success: true };
+}
+
+export async function getProject(projectId: string) {
+  const { orgId } = await checkUserAuthorization({});
+
+  const project = await db.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    include: {
+      sprints: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+  if (!project) return null;
+  if (project.organizationId !== orgId) return null;
+  return project;
 }
