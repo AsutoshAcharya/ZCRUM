@@ -38,7 +38,6 @@ const AddWorkflowStatus: FC<Props> = ({ projectId }) => {
   const { fn: addWorkflow, isLoading, data } = useFetch(addWorkflowStatus);
 
   const removeStatus = (statusToRemove: string) => {
-    console.log("here");
     setStatuses((prev) => prev.filter((s) => s !== statusToRemove));
   };
 

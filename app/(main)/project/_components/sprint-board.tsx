@@ -1,11 +1,15 @@
 "use client";
 import { IssueStatus, Sprint } from "@/lib/generated/prisma";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import SprintManager from "./sprint-manager";
-import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import CreateIssue from "./create-issue";
+import useFetch from "@/hooks/useFetch";
+import { getIssueForSprint } from "@/actions/issue";
+import { BarLoader } from "react-spinners";
+import IssueCard from "@/components/issue-card";
 interface Props {
   sprints: Array<Sprint>;
   projectId: string;
@@ -26,6 +30,21 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
     setIsDrawerOpen(true);
   }
 
+  const {
+    isLoading: issuesLoading,
+    error: issuesError,
+    fn: fetchIssues,
+    data: issues,
+    setData: setIssues,
+  } = useFetch(getIssueForSprint);
+  const [filteredIssues, setFilteredIssues] = useState(issues);
+
+  useEffect(() => {
+    if (currentSprint.id) fetchIssues(currentSprint.id);
+  }, [currentSprint.id]);
+  console.log(issues);
+
+  if (issuesError) return <div>Error loading issues</div>;
   return (
     <div className="w-full">
       {/* Sprint Manager */}
@@ -35,6 +54,9 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
         sprints={sprints}
         projectId={projectId}
       />
+      {issuesLoading && (
+        <BarLoader width="100%" className="mt-2" color="#36d7b7" />
+      )}
       {/* Kanban Board */}
       {statuses?.length > 0 && (
         <DragDropContext onDragEnd={(e) => {}}>
@@ -52,6 +74,31 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
                     </h3>
 
                     {/* Issues */}
+                    {issues
+                      ?.filter((issue) => issue.statusId === column.id)
+                      .map((issue, idx) => (
+                        <Draggable
+                          key={issue.id}
+                          draggableId={issue.id}
+                          index={idx}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <IssueCard
+                                issue={issue}
+                                issueStatus={issue.status}
+                                showStatus={true}
+                                onDelete={() => {}}
+                                onUpdate={() => {}}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
                     {provided.placeholder}
 
                     {column.order === 0 &&
@@ -77,7 +124,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
         sprintId={currentSprint.id}
         status={selectedStatus!}
         projectId={projectId}
-        onIssueCreated={() => {}}
+        onIssueCreated={() => fetchIssues(currentSprint.id)}
         orgId={orgId}
       />
     </div>

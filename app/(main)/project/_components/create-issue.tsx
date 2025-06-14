@@ -91,8 +91,6 @@ const CreateIssue: FC<Props> = ({
     data: users,
   } = useFetch(getOrganizationUsers);
   async function onSubmit(data: IssueFormData) {
-    console.log(data);
-    console.log(status.name);
     const payload = {
       title: data.title,
       description: data.description,
@@ -112,7 +110,6 @@ const CreateIssue: FC<Props> = ({
       toast.success("Issue added successfully");
     }
   }, [newIssue, createIssueLoading]);
-  console.log(users);
   return (
     <Drawer open={isOpen} onClose={onClose}>
       <DrawerContent>

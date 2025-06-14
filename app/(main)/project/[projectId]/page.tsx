@@ -10,7 +10,7 @@ const SingleProject = async ({
 }) => {
   const projectId = (await params).projectId;
   const project = await getProject(projectId);
-  console.log(project);
+
   if (!project) notFound();
   return (
     <div className="container mx-auto p-4">

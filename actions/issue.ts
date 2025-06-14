@@ -36,3 +36,20 @@ export async function createIssue(projectId: string, data: any) {
   });
   return issue;
 }
+export async function getIssueForSprint(sprintId: string) {
+  const {} = await checkUserAuthorization({});
+
+  const issues = await db.issue.findMany({
+    where: {
+      sprintId: sprintId,
+    },
+    orderBy: [{ statusId: "asc" }, { order: "asc" }],
+    include: {
+      assignee: true,
+      reporter: true,
+      status: true,
+    },
+  });
+
+  return issues;
+}

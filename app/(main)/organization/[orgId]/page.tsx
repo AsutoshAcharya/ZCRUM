@@ -10,7 +10,7 @@ const Organization = async ({
 }) => {
   const orgId = (await params).orgId;
   const organization = await getOrganization(orgId);
-  console.log(organization);
+
   return (
     <>
       {!organization ? (
