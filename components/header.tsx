@@ -14,7 +14,7 @@ import { checkUser } from "@/lib/checkUser";
 import UserLoading from "./user-loading";
 import Notification from "./notification";
 const Header = async () => {
-  await checkUser();
+  const user = await checkUser();
 
   return (
     <header>
@@ -42,9 +42,7 @@ const Header = async () => {
               <Button variant="outline">Login</Button>
             </SignInButton>
           </SignedOut>
-          <SignedIn>
-            <Notification />
-          </SignedIn>
+          <SignedIn>{user?.id && <Notification userId={user?.id} />}</SignedIn>
           <SignedIn>
             <UserMenu />
           </SignedIn>

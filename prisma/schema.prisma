@@ -104,7 +104,7 @@ model Notification {
   read      Boolean          @default(false)
   createdAt DateTime         @default(now())
   user      User             @relation(fields: [userId], references: [id])
-  issue     Issue?           @relation(fields: [issueId], references: [id])
+  issue     Issue?           @relation(fields: [issueId], references: [id], onDelete: Cascade)
   issueId   String?
 }
 

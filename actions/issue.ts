@@ -45,12 +45,11 @@ export async function createIssue(projectId: string, data: any) {
         issueId: issue.id,
       },
     });
+    console.log("assignedId server", issue?.assigneeId);
     await pusherServer.trigger(
-      `issue-created-${issue.assigneeId}`,
+      `issue-created-${issue?.assigneeId}`,
       "issue-assigned",
-      {
-        issue,
-      }
+      { message: "Issue created", issue }
     );
   }
   return issue;
