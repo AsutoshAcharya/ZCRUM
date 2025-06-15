@@ -17,6 +17,7 @@ import { BarLoader } from "react-spinners";
 import IssueCard from "@/components/issue-card";
 import { toast } from "sonner";
 import { getPusherClient } from "@/lib/pusher";
+import BoardFilters from "./board-filters";
 
 function reorder(list: any, startIndex: number, endIndex: number) {
   const res = Array.from(list);
@@ -59,7 +60,9 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
     data,
   } = useFetch(updateIssueOrder);
   const [filteredIssues, setFilteredIssues] = useState(issues);
-
+  function handleFilterChange(newFilteredIssues: Array<any>) {
+    setFilteredIssues(newFilteredIssues);
+  }
   useEffect(() => {
     if (currentSprint.id) fetchIssues(currentSprint.id);
   }, [currentSprint.id]);
@@ -153,6 +156,9 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
           sprints={sprints}
           projectId={projectId}
         />
+        {issues && !issuesLoading && (
+          <BoardFilters issues={issues} onFilterChange={handleFilterChange} />
+        )}
         {updateIssueError && (
           <p className="text-red-500 mt-2">{updateIssueError?.message}</p>
         )}
@@ -176,7 +182,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
                       </h3>
 
                       {/* Issues */}
-                      {issues
+                      {filteredIssues
                         ?.filter((issue) => issue.statusId === column.id)
                         .map((issue, idx) => (
                           <Draggable
