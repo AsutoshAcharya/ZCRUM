@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import useFetch from "@/hooks/useFetch";
 import { updateSprintStatus } from "@/actions/sprint";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BarLoader } from "react-spinners";
 
 interface Props {
@@ -31,6 +31,7 @@ const SprintManager: FC<Props> = ({
   onSprintChange,
   projectId,
 }) => {
+  const params = useSearchParams();
   const [status, setStatus] = useState(sprint.status);
   const sd = new Date(sprint.startDate);
   const ed = new Date(sprint.endDate);
@@ -70,6 +71,17 @@ const SprintManager: FC<Props> = ({
     }
   }, [updatedStatus]);
 
+  useEffect(() => {
+    const sprintId = params.get("sprint");
+    if (sprintId && sprintId !== sprint.id) {
+      const selectedSprint = sprints.find((s) => s.id === sprintId);
+      if (selectedSprint) {
+        onSprintChange(selectedSprint);
+        setStatus(selectedSprint.status);
+      }
+    }
+  }, [params, sprints]);
+
   return (
     <>
       <div className="w-full flex justify-between items-center gap-4">
@@ -77,8 +89,11 @@ const SprintManager: FC<Props> = ({
           value={sprint.id}
           onValueChange={(value) => {
             const selectedSprint = sprints.find((s) => s.id === value);
-            onSprintChange(selectedSprint!);
-            setStatus(selectedSprint?.status!);
+            if (selectedSprint) {
+              onSprintChange(selectedSprint);
+              setStatus(selectedSprint?.status);
+            }
+            router.replace(`/project/${projectId}`, undefined);
           }}
         >
           <SelectTrigger className="bg-slate-950 self-start w-full">

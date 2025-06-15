@@ -2,6 +2,10 @@ import { getOrganization } from "@/actions/organization";
 import OrgSwitcher from "@/components/org-switcher";
 import React from "react";
 import ProjectList from "./_components/project-list";
+import UserIssues from "./_components/user-issues";
+
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 const Organization = async ({
   params,
@@ -10,7 +14,11 @@ const Organization = async ({
 }) => {
   const orgId = (await params).orgId;
   const organization = await getOrganization(orgId);
+  const { userId } = await auth();
 
+  if (!userId) {
+    redirect("/sign-in");
+  }
   return (
     <>
       {!organization ? (
@@ -26,7 +34,9 @@ const Organization = async ({
           <div className="mb-4">
             <ProjectList orgId={organization.organization.id} />
           </div>
-          <div className="mb-8">Show user assigned reported issues</div>
+          <div className="mb-8">
+            <UserIssues userId={userId} />
+          </div>
         </div>
       )}
     </>

@@ -31,7 +31,7 @@ const priorityColor: any = {
 
 const IssueCard: FC<Props> = ({
   issue,
-  showStatus,
+  showStatus = false,
   issueStatus,
   onDelete,
   onUpdate,
