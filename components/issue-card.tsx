@@ -1,5 +1,6 @@
-import { Issue, IssueStatus } from "@/lib/generated/prisma";
-import React, { FC, useEffect, useState } from "react";
+"use client";
+import { IssueStatus } from "@/lib/generated/prisma";
+import React, { FC, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,13 +11,16 @@ import {
 import { Badge } from "./ui/badge";
 import UserAvatar from "./user-avatar";
 import { formatDistanceToNow } from "date-fns";
-import Grow from "./ui/grow";
+
+import IssueDetailsDialog from "./issue-details-dialog";
+import { toast } from "sonner";
 interface Props {
   issue: any;
   issueStatus: IssueStatus;
   showStatus?: boolean;
   onDelete: () => void;
   onUpdate: () => void;
+  statuses: Array<IssueStatus>;
 }
 const priorityColor: any = {
   LOW: "border-green-600",
@@ -31,8 +35,14 @@ const IssueCard: FC<Props> = ({
   issueStatus,
   onDelete,
   onUpdate,
+  statuses,
 }) => {
   const [open, setOpen] = useState(false);
+  // const router = useRouter();
+  // function onDeleteHandler(...params){
+  //   router.refresh();
+  //   onDelete(...params)
+  // }
   const created = formatDistanceToNow(new Date(issue.createdAt), {
     addSuffix: true,
   });
@@ -41,6 +51,7 @@ const IssueCard: FC<Props> = ({
     <>
       {/* <Grow> */}
       <Card
+        onClick={() => setOpen(true)}
         className={`border-0 border-t-2 ${
           priorityColor[issue?.priority]
         } rounded-lg transition-shadow hover:shadow-lg hover:shadow-blue-500/30`}
@@ -60,7 +71,17 @@ const IssueCard: FC<Props> = ({
         </CardFooter>
       </Card>
       {/* </Grow> */}
-      {open && <></>}
+      {open && (
+        <IssueDetailsDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          issue={issue}
+          onDelete={() => toast.success("Issue deleted successfully")}
+          onUpdate={(updatedIssue) => {}}
+          borderColor={priorityColor[issue?.priority]}
+          statuses={statuses}
+        />
+      )}
     </>
   );
 };

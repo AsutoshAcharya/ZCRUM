@@ -183,6 +183,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
                             key={issue.id}
                             draggableId={issue.id}
                             index={idx}
+                            isDragDisabled={isUpdatingIssue}
                           >
                             {(provided) => (
                               <div
@@ -197,6 +198,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
                                   showStatus={true}
                                   onDelete={() => {}}
                                   onUpdate={() => {}}
+                                  statuses={statuses}
                                 />
                               </div>
                             )}

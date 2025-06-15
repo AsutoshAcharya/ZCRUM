@@ -3,11 +3,12 @@ import { db } from "@/lib/prisma";
 import { checkUserAuthorization } from "./checkUserAuthorization";
 import { pusherServer } from "@/lib/pusher";
 
-async function triggerBoardUpdate(sprintId: string) {
+async function triggerBoardUpdate(sprintId: string, updatedBy?: string) {
   if (!sprintId) return;
   await pusherServer.trigger(`update-board-${sprintId}`, "update-board", {
     message: "Update Board",
     sprintId,
+    updatedBy,
   });
 }
 
@@ -112,4 +113,62 @@ export async function updateIssueOrder(updatedIssues: any, sprintId: string) {
 
   await triggerBoardUpdate(sprintId);
   return { status: true };
+}
+
+export async function deleteIssue(issueId: string) {
+  const { userId } = await checkUserAuthorization({});
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+  if (!user) throw new Error("User not found");
+  const issue = await db.issue.findUnique({
+    where: { id: issueId },
+    include: { project: true },
+  });
+
+  if (!issue) throw new Error("Issue not found");
+  if (issue.reporterId !== user.id)
+    throw new Error("You don't have permission to delete the issue");
+  const sprintId = String(issue?.sprintId);
+  await db.issue.delete({ where: { id: issueId } });
+
+  await triggerBoardUpdate(sprintId, user.id);
+  return { success: true };
+}
+
+export async function updateIssue(issueId: string, data: any) {
+  const { userId, orgId } = await checkUserAuthorization({});
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+  if (!user) throw new Error("User not found");
+  const issue = await db.issue.findUnique({
+    where: { id: issueId },
+    include: { project: true },
+  });
+  if (!issue) throw new Error("Issue not found");
+  if (issue.project.organizationId !== orgId) throw new Error("Unauthorized");
+  try {
+    const updateIssue = await db.issue.update({
+      where: {
+        id: issueId,
+      },
+      data: {
+        statusId: data?.statusId,
+        priority: data?.priority,
+      },
+      include: {
+        assignee: true,
+        reporter: true,
+      },
+    });
+    await triggerBoardUpdate(updateIssue.sprintId!);
+    return updateIssue;
+  } catch (error: any) {
+    throw new Error("Error updating issue:" + error?.message);
+  }
 }
