@@ -3,6 +3,36 @@ import { db } from "@/lib/prisma";
 import { checkUserAuthorization } from "./checkUserAuthorization";
 import { pusherServer } from "@/lib/pusher";
 
+async function triggerBoardUpdate(sprintId: string) {
+  if (!sprintId) return;
+  await pusherServer.trigger(`update-board-${sprintId}`, "update-board", {
+    message: "Update Board",
+    sprintId,
+  });
+}
+
+async function notifyAssignee(issue: any, currentUserId: string) {
+  if (issue?.assigneeId && issue.assigneeId !== currentUserId) {
+    await db.notification.create({
+      data: {
+        userId: issue.assigneeId,
+        type: "ASSIGNED",
+        message: `You have been assigned to issue ${issue.title}`,
+        issueId: issue.id,
+      },
+    });
+
+    await pusherServer.trigger(
+      `issue-created-${issue.assigneeId}`,
+      "issue-assigned",
+      {
+        message: "Issue created",
+        issue,
+      }
+    );
+  }
+}
+
 export async function createIssue(projectId: string, data: any) {
   const { userId, orgId } = await checkUserAuthorization({});
   const user = await db.user.findUnique({
@@ -35,23 +65,13 @@ export async function createIssue(projectId: string, data: any) {
       reporter: true,
     },
   });
-  console.log(issue);
-  if (issue?.assigneeId) {
-    await db.notification.create({
-      data: {
-        userId: issue?.assigneeId,
-        type: "ASSIGNED",
-        message: `You have been assigned to issue ${issue.title}`,
-        issueId: issue.id,
-      },
-    });
-    console.log("assignedId server", issue?.assigneeId);
-    await pusherServer.trigger(
-      `issue-created-${issue?.assigneeId}`,
-      "issue-assigned",
-      { message: "Issue created", issue }
-    );
+  //generate notifications is someone else assigns an issue
+  if (user?.id !== issue.assigneeId && issue?.assigneeId) {
+    await notifyAssignee(issue, user?.id!);
   }
+
+  //for sprint refetch
+  await triggerBoardUpdate(data.sprintId);
   return issue;
 }
 export async function getIssueForSprint(sprintId: string) {
@@ -72,7 +92,7 @@ export async function getIssueForSprint(sprintId: string) {
   return issues;
 }
 
-export async function updateIssueOrder(updatedIssues: any) {
+export async function updateIssueOrder(updatedIssues: any, sprintId: string) {
   await checkUserAuthorization({});
 
   await db.$transaction(async (prisma) => {
@@ -89,5 +109,7 @@ export async function updateIssueOrder(updatedIssues: any) {
       });
     }
   });
+
+  await triggerBoardUpdate(sprintId);
   return { status: true };
 }

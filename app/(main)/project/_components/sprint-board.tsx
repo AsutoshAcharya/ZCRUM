@@ -16,6 +16,7 @@ import { getIssueForSprint, updateIssueOrder } from "@/actions/issue";
 import { BarLoader } from "react-spinners";
 import IssueCard from "@/components/issue-card";
 import { toast } from "sonner";
+import { getPusherClient } from "@/lib/pusher";
 
 function reorder(list: any, startIndex: number, endIndex: number) {
   const res = Array.from(list);
@@ -116,7 +117,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
     const sortedIssues = newOrderedData.sort((a, b) => a.order - b.order);
     setIssues(sortedIssues);
 
-    updateIssueOrderFn(sortedIssues);
+    updateIssueOrderFn(sortedIssues, currentSprint.id);
   }
 
   useEffect(() => {
@@ -124,7 +125,23 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
       document.body.style.overflow = "auto";
     }
   }, [isDrawerOpen]);
+  useEffect(() => {
+    if (!currentSprint?.id) return;
+    const channelName = `update-board-${currentSprint?.id}`;
+    console.warn(channelName);
+    const pusherClient = getPusherClient();
+    const channel = pusherClient.subscribe(channelName);
+    channel.bind("update-board", (data: any) => {
+      console.warn(data);
+      fetchIssues(currentSprint.id);
+    });
 
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+      // pusherClient.disconnect();
+    };
+  }, [currentSprint?.id]);
   if (issuesError) return <div>Error loading issues</div>;
   return (
     <>
@@ -212,7 +229,7 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
           sprintId={currentSprint.id}
           status={selectedStatus!}
           projectId={projectId}
-          onIssueCreated={() => fetchIssues(currentSprint.id)}
+          onIssueCreated={() => {}}
           orgId={orgId}
         />
       )}
