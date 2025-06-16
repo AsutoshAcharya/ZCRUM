@@ -1,6 +1,6 @@
 "use client";
 import { IssueStatus } from "@/lib/generated/prisma";
-import React, { FC, useState } from "react";
+import React, { FC, HTMLAttributes, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 
 import IssueDetailsDialog from "./issue-details-dialog";
 import { toast } from "sonner";
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   issue: any;
   issueStatus: IssueStatus;
   showStatus?: boolean;
@@ -36,6 +36,7 @@ const IssueCard: FC<Props> = ({
   onDelete,
   onUpdate,
   statuses,
+  ...rest
 }) => {
   const [open, setOpen] = useState(false);
   // const router = useRouter();
@@ -55,6 +56,7 @@ const IssueCard: FC<Props> = ({
         className={`border-0 border-t-2 ${
           priorityColor[issue?.priority]
         } rounded-lg transition-shadow hover:shadow-lg hover:shadow-blue-500/30`}
+        {...rest}
       >
         <CardHeader className={``}>
           <CardTitle>{issue.title}</CardTitle>

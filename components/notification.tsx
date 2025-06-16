@@ -6,7 +6,7 @@ import {
 } from "@/actions/notification";
 import useFetch from "@/hooks/useFetch";
 import { getPusherClient } from "@/lib/pusher";
-import { Bell, Check, CheckCheck, Eye, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, Eye, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -17,6 +17,7 @@ import { Card, CardContent } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { BarLoader } from "react-spinners";
 
 const Notification = ({ userId }: { userId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -136,9 +137,7 @@ const Notification = ({ userId }: { userId: string }) => {
         <Separator />
 
         {isLoading ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">
-            Loading notifications...
-          </div>
+          <BarLoader width="100%" className="mt-2" color="#36d7b7" />
         ) : !notifications || notifications.length === 0 ? (
           <div className="p-8 text-center">
             <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />

@@ -1,3 +1,4 @@
+"use client";
 import { deleteIssue, updateIssue } from "@/actions/issue";
 import useFetch from "@/hooks/useFetch";
 import { useOrganization, useUser } from "@clerk/nextjs";
