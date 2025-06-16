@@ -93,7 +93,7 @@ const Notification = ({ userId }: { userId: string }) => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative">
+        <Button variant="secondary" size="sm" className="relative">
           <Bell className="h-5 w-5" />
           {totalUnread > 0 && (
             <Badge
@@ -190,7 +190,10 @@ const Notification = ({ userId }: { userId: string }) => {
                         {!notification.read && (
                           <Tooltip>
                             <TooltipTrigger
-                              onClick={() => handleMarkAsRead(notification.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMarkAsRead(notification.id);
+                              }}
                               className="cursor-pointer"
                             >
                               <Eye className="h-3 w-3" />
