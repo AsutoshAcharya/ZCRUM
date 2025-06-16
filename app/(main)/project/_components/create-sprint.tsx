@@ -48,6 +48,7 @@ interface Props {
   projectKey: string;
   sprintKey: number;
   hasWorkflow: boolean;
+  hasSprints: boolean;
 }
 
 const SprintCreationForm: FC<Props> = ({
@@ -56,6 +57,7 @@ const SprintCreationForm: FC<Props> = ({
   projectKey,
   sprintKey,
   hasWorkflow,
+  hasSprints,
 }) => {
   const [showForm, setShowForm] = useState(false);
   const [dateRange, setDateRange] = useState<Shape.DateRange>({
@@ -91,7 +93,9 @@ const SprintCreationForm: FC<Props> = ({
         {projectTitle}
       </h1>
       <div className="flex flex-row gap-4">
-        {!hasWorkflow && <AddWorkflowStatus projectId={projectId} />}
+        {!hasWorkflow && hasSprints && (
+          <AddWorkflowStatus projectId={projectId} />
+        )}
         <Button onClick={() => setShowForm(true)}>Create New Sprint</Button>
       </div>
       <Dialog open={showForm} onOpenChange={setShowForm}>

@@ -12,15 +12,16 @@ const SingleProject = async ({
   const project = await getProject(projectId);
 
   if (!project) notFound();
+
   return (
     <div className="container mx-auto p-4">
-      {/* Sprint Creation */}
       <SprintCreationForm
         projectTitle={project.name}
         projectId={project.id}
         projectKey={project.key}
         sprintKey={project.sprints?.length + 1}
         hasWorkflow={project.statuses.length > 0}
+        hasSprints={project.sprints.length > 0}
       />
       {project.sprints.length > 0 ? (
         <SprintBoard
@@ -30,7 +31,7 @@ const SingleProject = async ({
           statuses={project.statuses}
         />
       ) : (
-        <div>Create Sprint</div>
+        <></>
       )}
     </div>
   );

@@ -7,11 +7,11 @@ const Onboarding = () => {
   const { organization } = useOrganization();
   const router = useRouter();
 
-  useEffect(() => {
-    if (organization) {
-      router.push(`/organization/${organization.slug}`);
-    }
-  }, [organization]);
+  // useEffect(() => {
+  //   if (organization) {
+  //     router.push(`/organization/${organization.slug}`);
+  //   }
+  // }, [organization]);
   return (
     <div className="flex justify-center items-center pt-14">
       <OrganizationList

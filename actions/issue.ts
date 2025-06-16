@@ -12,26 +12,15 @@ async function triggerBoardUpdate(sprintId: string, updatedBy?: string) {
   });
 }
 
-async function notifyAssignee(issue: any, currentUserId: string) {
-  if (issue?.assigneeId && issue.assigneeId !== currentUserId) {
-    await db.notification.create({
-      data: {
-        userId: issue.assigneeId,
-        type: "ASSIGNED",
-        message: `You have been assigned to issue ${issue.title}`,
-        issueId: issue.id,
-      },
-    });
-
-    await pusherServer.trigger(
-      `issue-created-${issue.assigneeId}`,
-      "issue-assigned",
-      {
-        message: "Issue created",
-        issue,
-      }
-    );
-  }
+async function notifyAssignee(issue: any) {
+  await pusherServer.trigger(
+    `issue-created-${issue.assigneeId}`,
+    "issue-assigned",
+    {
+      message: "Issue created",
+      issue,
+    }
+  );
 }
 
 export async function createIssue(projectId: string, data: any) {
@@ -68,7 +57,15 @@ export async function createIssue(projectId: string, data: any) {
   });
   //generate notifications is someone else assigns an issue
   if (user?.id !== issue.assigneeId && issue?.assigneeId) {
-    await notifyAssignee(issue, user?.id!);
+    await db.notification.create({
+      data: {
+        userId: issue.assigneeId,
+        type: "ASSIGNED",
+        message: `You have been assigned to issue ${issue.title}`,
+        issueId: issue.id,
+      },
+    });
+    await notifyAssignee(issue);
   }
 
   //for sprint refetch
@@ -148,7 +145,7 @@ export async function updateIssue(issueId: string, data: any) {
   if (!user) throw new Error("User not found");
   const issue = await db.issue.findUnique({
     where: { id: issueId },
-    include: { project: true },
+    include: { project: true, status: true },
   });
   if (!issue) throw new Error("Issue not found");
   if (issue.project.organizationId !== orgId) throw new Error("Unauthorized");
@@ -164,8 +161,41 @@ export async function updateIssue(issueId: string, data: any) {
       include: {
         assignee: true,
         reporter: true,
+        status: true,
       },
     });
+    if (issue.assigneeId !== user.id) {
+      let changes: Record<string, string> = {};
+
+      if (issue.statusId !== updateIssue.statusId)
+        changes[
+          "status"
+        ] = `status: ${issue.status.name} → ${updateIssue.status.name}`;
+
+      if (issue.priority !== updateIssue.priority)
+        changes[
+          "priority"
+        ] = `priority: ${issue.priority} → ${updateIssue.priority}`;
+
+      const keys = Object.keys(changes);
+
+      let message = `The ${keys
+        .map((k) => changes[k])
+        .join(" and ")} of issue "${
+        issue.title
+      }" assigned to you has been updated.`;
+
+      await db.notification.create({
+        data: {
+          userId: updateIssue.assigneeId!,
+          type: keys.includes("priority") ? "PRIORITY_CHANGE" : "STATUS_CHANGE",
+          message: message,
+          issueId: updateIssue.id,
+        },
+      });
+
+      await notifyAssignee(issue);
+    }
     await triggerBoardUpdate(updateIssue.sprintId!);
     return updateIssue;
   } catch (error: any) {

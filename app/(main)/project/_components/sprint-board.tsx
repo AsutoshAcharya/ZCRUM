@@ -168,14 +168,16 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
         {/* Kanban Board */}
         {statuses?.length > 0 && (
           <DragDropContext onDragEnd={(e) => onDragEnd(e)}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 bg-slate-900 p-4 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-none lg:flex lg:flex-row gap-4 mt-4 bg-slate-900 p-4 rounded-lg overflow-x-auto">
               {statuses.map((column) => (
                 <Droppable key={column.id} droppableId={column.id}>
                   {(provided) => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className="space-y-2"
+                      className={`space-y-2 ${
+                        statuses.length <= 4 ? "flex-1" : "w-full max-w-md"
+                      }`}
                     >
                       <h3 className="font-semibold mt-2 text-center">
                         {column.name}
@@ -201,7 +203,6 @@ const SprintBoard: FC<Props> = ({ sprints, projectId, orgId, statuses }) => {
                                 <IssueCard
                                   issue={issue}
                                   issueStatus={issue.status}
-                                  showStatus={true}
                                   onDelete={() => {}}
                                   onUpdate={() => {}}
                                   statuses={statuses}

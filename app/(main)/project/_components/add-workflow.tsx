@@ -31,6 +31,8 @@ const AddWorkflowStatus: FC<Props> = ({ projectId }) => {
     const trimmed = value.trim();
     if (!trimmed || statuses.includes(trimmed))
       return toast.warning("Status already added add a different status");
+    if (statuses.length === 6)
+      return toast.warning("Maximum of 6 statuses allowed per project");
     setStatuses((prev) => [...prev, trimmed]);
     setValue("");
   }
@@ -107,7 +109,7 @@ const AddWorkflowStatus: FC<Props> = ({ projectId }) => {
 
             <div className="flex gap-2 mt-4 justify-end">
               <Button
-                disabled={statuses.length === 0 || isLoading}
+                disabled={statuses.length < 2 || isLoading}
                 onClick={handleSave}
               >
                 {isLoading && <Loader className="animate-spin" />} Save Workflow

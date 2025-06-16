@@ -16,6 +16,7 @@ import { Separator } from "./ui/separator";
 import { Card, CardContent } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const Notification = ({ userId }: { userId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -87,6 +88,8 @@ const Notification = ({ userId }: { userId: string }) => {
     return `${Math.floor(diffInMinutes / 1440)}d ago`;
   };
 
+  const router = useRouter();
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -154,6 +157,16 @@ const Notification = ({ userId }: { userId: string }) => {
                       ? "bg-blue-50 dark:bg-blue-950/20"
                       : "bg-transparent"
                   }`}
+                  onClick={() => {
+                    router.push(
+                      `/project/${notification?.issue?.projectId}?sprint=${notification?.issue?.sprintId}`
+                    );
+                    if (!notification.read) {
+                      handleMarkAsRead(notification.id);
+                    }
+
+                    setIsOpen(false);
+                  }}
                 >
                   <CardContent className="p-3 cursor-pointer">
                     <div className="flex items-start justify-between gap-2">
